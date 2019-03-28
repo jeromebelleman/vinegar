@@ -7,14 +7,21 @@ const stepRegExps = steps.map(step => RegExp(`^ *(${step}) *(.*) *`))
 exports.load = function (feature, definition) {
   const lines = fs.readFileSync(feature).toString().split('\n')
 
-  backgrounds = []
-  scenarios = []
+  const backgrounds = []
+  const scenarios = []
 
+  let previousKeyword
   lines.map(line => {
     for (const stepRegExp of stepRegExps) {
       const match = line.match(stepRegExp)
       if (match) {
-        scenarios.push({ keyword: match[1], text: match[2] })
+        let keyword
+        if (match[1] === 'And') {
+          keyword = previousKeyword
+        } else {
+          keyword = previousKeyword = match[1]
+        }
+        scenarios.push({ keyword, text: match[2] })
         break
       }
     }
