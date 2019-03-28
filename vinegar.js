@@ -1,9 +1,11 @@
 const fs = require('fs')
 
-const steps = ['Given', 'When', 'Then', 'And']
-const stepRegExps = steps.map(step => RegExp(`^ *(${step}) *(.*) *`))
+const scenarioTypes = ['Scenario Outline']
+let regExps = scenarioTypes.map(step => RegExp(`^ *(${step}) *:`))
 
-// Tests
+const steps = ['Given', 'When', 'Then', 'And']
+regExps = [...regExps, ...steps.map(step => RegExp(`^ *(${step}) *(.*) *`))]
+
 exports.load = function (feature, definition) {
   const lines = fs.readFileSync(feature).toString().split('\n')
 
@@ -11,21 +13,30 @@ exports.load = function (feature, definition) {
   const scenarios = []
 
   let previousKeyword
-  lines.map(line => {
-    for (const stepRegExp of stepRegExps) {
-      const match = line.match(stepRegExp)
+  let outline = false
+  let i = 0
+  while (i < lines.length) {
+    const line = lines[i]
+
+    for (const regExp of regExps) {
+      const match = line.match(regExp)
       if (match) {
         let keyword
-        if (match[1] === 'And') {
-          keyword = previousKeyword
+        if (match[1] === 'Scenario Outline') {
+          outline = true
         } else {
-          keyword = previousKeyword = match[1]
+          if (match[1] === 'And') {
+            keyword = previousKeyword
+          } else {
+            keyword = previousKeyword = match[1]
+          }
+          scenarios.push({ keyword, text: match[2] })
         }
-        scenarios.push({ keyword, text: match[2] })
         break
       }
     }
-  })
+    i++
+  }
 
   return { backgrounds, scenarios }
 }
