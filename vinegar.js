@@ -1,11 +1,5 @@
 const fs = require('fs')
 
-const scenarioTypes = ['Scenario Outline']
-let regExps = scenarioTypes.map(step => RegExp(`^ *(${step}) *:`))
-
-const steps = ['Given', 'When', 'Then', 'And']
-regExps = [...regExps, ...steps.map(step => RegExp(`^ *(${step}) *(.*) *`))]
-
 exports.mkExample = function (header, line) {
   const example = {}
   line = line.split('|').slice(1, -1).map(field => field.trim())
@@ -71,7 +65,7 @@ exports.load = function (feature, definition) {
       if (!outline || example) scenarios.push({ keyword, text })
     } else if (line.match(/^ *#|^ *$/)) {
     } else {
-      throw `Unexpected input line ${i}: "${line}"`
+      throw new Error(`Unexpected input line ${i}: "${line}"`)
     }
 
     i++
