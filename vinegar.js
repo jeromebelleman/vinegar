@@ -41,9 +41,9 @@ exports.load = function (feature, definition) {
     } else if (match = line.match(/^ *Scenario *:/)) {
       outline = undefined
     } else if (match = line.match(/^ *Scenario Outline *:/)) {
-      if (outline) {
-        i = outline
-        outline = undefined
+      if (example = examples.shift()) {
+        header = undefined
+        i = outline - 1 // - 1, since i++ comes further down
       } else {
         outline = i + 1
       }
@@ -64,6 +64,7 @@ exports.load = function (feature, definition) {
       }
       if (!outline || example) scenarios.push({ keyword, text })
     } else if (line.match(/^ *#|^ *$/)) {
+      // Just skip comments and empty lines
     } else {
       throw new Error(`Unexpected input line ${i}: "${line}"`)
     }
