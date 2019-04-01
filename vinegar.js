@@ -21,9 +21,9 @@ exports.load = function (feature, definition) {
   let match
   let previousKeyword
 
-  let outline, header
+  let outline, header, example
   let examples = []
-  let example
+  let background
 
   while (true) {
     const line = lines[i]
@@ -38,11 +38,12 @@ exports.load = function (feature, definition) {
           header = exports.mkHeader(line)
         }
       }
-    } else if (match = line.match(/^ *Scenario *:/)) {
+    } else if (match = line.match(/^ *(Scenario|Background) *:/)) {
       if (example = examples.shift()) {
         header = undefined
         i = outline - 1 // - 1, since i++ comes further down
       } else {
+        background = match[1] === 'Background' ? true : false
         outline = undefined
       }
     } else if (match = line.match(/^ *Scenario Outline *:/)) {
@@ -67,7 +68,13 @@ exports.load = function (feature, definition) {
           text = text.replace(`<${column}>`, example[column])
         }
       }
-      if (!outline || example) scenarios.push({ keyword, text })
+      if (!outline || example) {
+        if (background) {
+          backgrounds.push({ keyword, text })
+        } else {
+          scenarios.push({ keyword, text })
+        }
+      }
     } else if (line.match(/^ *#|^ *$/)) {
       // Just skip comments and empty lines
     } else {
