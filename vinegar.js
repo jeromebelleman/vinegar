@@ -39,7 +39,12 @@ exports.load = function (feature, definition) {
         }
       }
     } else if (match = line.match(/^ *Scenario *:/)) {
-      outline = undefined
+      if (example = examples.shift()) {
+        header = undefined
+        i = outline - 1 // - 1, since i++ comes further down
+      } else {
+        outline = undefined
+      }
     } else if (match = line.match(/^ *Scenario Outline *:/)) {
       if (example = examples.shift()) {
         header = undefined
