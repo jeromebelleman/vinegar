@@ -14,16 +14,20 @@ exports.mkHeader = function (line) {
 exports.load = function (feature, definition) {
   const lines = fs.readFileSync(feature).toString().split('\n')
 
+  // Output
   const backgrounds = []
   const scenarios = []
+  let scenario
 
+  // State machine
   let i = 0
   let match
   let previousKeyword
+  let isBackground
 
+  // Examples
   let outline, header, example
   let examples = []
-  let background
 
   while (true) {
     const line = lines[i]
@@ -39,14 +43,16 @@ exports.load = function (feature, definition) {
         }
       }
     } else if (match = line.match(/^ *(Scenario|Background) *:/)) {
+      scenario = []
       if (example = examples.shift()) {
         header = undefined
         i = outline - 1 // - 1, since i++ comes further down
       } else {
-        background = match[1] === 'Background' ? true : false
+        isBackground = match[1] === 'Background' ? true : false
         outline = undefined
       }
     } else if (match = line.match(/^ *Scenario Outline *:/)) {
+      scenario = []
       if (example = examples.shift()) {
         header = undefined
         i = outline - 1 // - 1, since i++ comes further down
@@ -69,10 +75,10 @@ exports.load = function (feature, definition) {
         }
       }
       if (!outline || example) {
-        if (background) {
+        if (isBackground) {
           backgrounds.push({ keyword, text })
         } else {
-          scenarios.push({ keyword, text })
+          scenario.push({ keyword, text })
         }
       }
     } else if (line.match(/^ *#|^ *$/)) {
@@ -84,6 +90,7 @@ exports.load = function (feature, definition) {
     i++
 
     if (i === lines.length - 1) {
+      scenarios.push(scenario)
       if (example = examples.shift()) {
         i = outline
       } else {
