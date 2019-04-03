@@ -52,7 +52,6 @@ exports.load = function (feature, definition) {
         outline = undefined
       }
     } else if (match = line.match(/^ *Scenario Outline *:/)) {
-      scenario = []
       if (example = examples.shift()) {
         header = undefined
         i = outline - 1 // - 1, since i++ comes further down
@@ -87,11 +86,12 @@ exports.load = function (feature, definition) {
       throw new Error(`Unexpected input line ${i}: "${line}"`)
     }
 
-    i++
+    i++ // TODO Try moving this right to the bottom
 
-    if (i === lines.length - 1) {
-      scenarios.push(scenario)
+    if (i === lines.length - 1) { // TODO As a last if?
+      if (scenario) scenarios.push(scenario)
       if (example = examples.shift()) {
+        scenario = []
         i = outline
       } else {
         break
