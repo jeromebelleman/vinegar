@@ -17,7 +17,7 @@ exports.load = function (feature, definition) {
   // Output
   const backgrounds = []
   const scenarios = []
-  let scenario
+  let scenario = []
 
   // State machine
   let i = 0
@@ -43,6 +43,7 @@ exports.load = function (feature, definition) {
         }
       }
     } else if (match = line.match(/^ *(Scenario|Background) *:/)) {
+      if (scenario.length) scenarios.push(scenario)
       scenario = []
       if (example = examples.shift()) {
         header = undefined
@@ -52,6 +53,8 @@ exports.load = function (feature, definition) {
         outline = undefined
       }
     } else if (match = line.match(/^ *Scenario Outline *:/)) {
+      if (scenario.length) scenarios.push(scenario)
+      scenario = []
       if (example = examples.shift()) {
         header = undefined
         i = outline - 1 // - 1, since i++ comes further down
@@ -89,9 +92,10 @@ exports.load = function (feature, definition) {
     i++ // TODO Try moving this right to the bottom
 
     if (i === lines.length - 1) { // TODO As a last if?
-      if (scenario) scenarios.push(scenario)
+      if (scenario.length) scenarios.push(scenario)
+      scenario = []
+
       if (example = examples.shift()) {
-        scenario = []
         i = outline
       } else {
         break
