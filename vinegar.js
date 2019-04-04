@@ -32,7 +32,16 @@ exports.load = function (feature, definition) {
   while (true) {
     const line = lines[i]
 
-    if (line.match(/^ *(Feature|Examples) *:/)) {
+    if (i === lines.length - 1) {
+      if (scenario.length) scenarios.push(scenario)
+      scenario = []
+
+      if (example = examples.shift()) {
+        i = outline
+      } else {
+        break
+      }
+    } else if (line.match(/^ *(Feature|Examples) *:/)) {
       // Just skip (for now)
     } else if (line.match(/^ *\|/)) {
       if (!example) {
@@ -87,17 +96,6 @@ exports.load = function (feature, definition) {
       // Just skip comments and empty lines
     } else {
       throw new Error(`Unexpected input line ${i}: "${line}"`)
-    }
-
-    if (i === lines.length - 1) { // TODO As a last if?
-      if (scenario.length) scenarios.push(scenario)
-      scenario = []
-
-      if (example = examples.shift()) {
-        i = outline
-      } else {
-        break
-      }
     }
 
     i++
