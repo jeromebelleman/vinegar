@@ -47,7 +47,7 @@ exports.load = function (feature, definition) {
       scenario = []
       if (example = examples.shift()) {
         header = undefined
-        i = outline - 1 // - 1, since i++ comes further down
+        i = outline
       } else {
         isBackground = match[1] === 'Background' ? true : false
         outline = undefined
@@ -57,9 +57,9 @@ exports.load = function (feature, definition) {
       scenario = []
       if (example = examples.shift()) {
         header = undefined
-        i = outline - 1 // - 1, since i++ comes further down
+        i = outline
       } else {
-        outline = i + 1
+        outline = i
       }
     } else if (match = line.match(/^ *(Given|When|Then|And) *(.+) */)) {
       let keyword
@@ -89,8 +89,6 @@ exports.load = function (feature, definition) {
       throw new Error(`Unexpected input line ${i}: "${line}"`)
     }
 
-    i++ // TODO Try moving this right to the bottom
-
     if (i === lines.length - 1) { // TODO As a last if?
       if (scenario.length) scenarios.push(scenario)
       scenario = []
@@ -101,6 +99,8 @@ exports.load = function (feature, definition) {
         break
       }
     }
+
+    i++
   }
 
   return { backgrounds, scenarios }
