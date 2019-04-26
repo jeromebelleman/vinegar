@@ -1,0 +1,11 @@
+#! /usr/bin/env node
+
+const vinegar = require('../vinegar')
+
+const background = vinegar.load('background.feature')
+const scenario = vinegar.load('example.feature')
+const outline = vinegar.load('outline.feature')
+
+console.log(JSON.stringify(background, null, 1))
+console.log(JSON.stringify(scenario, null, 1))
+console.log(JSON.stringify(outline, null, 1))
