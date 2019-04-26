@@ -1,12 +1,12 @@
 {
   "name": "vinegar",
   "version": "1.0.0",
-  "description": "",
+  "description": "Gherkin parser",
   "main": "vinegar.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Jerome Belleman",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^5.15.3",
